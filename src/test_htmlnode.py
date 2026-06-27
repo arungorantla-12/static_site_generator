@@ -1,5 +1,5 @@
 import unittest
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode,LeafNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_eq1(self):
@@ -24,6 +24,25 @@ class TestHTMLNode(unittest.TestCase):
         self.assertEqual(node.value,node1.value)
         self.assertEqual(node.tag,node1.tag)
         self.assertEqual(node.children,node1.children)
+
+    def test_leaf_to_html_p(self):
+        node = LeafNode("p", "Hello, world!")
+        self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
+
+    def test_leaf_to_html_a(self):
+        node1 = LeafNode("a","Deez",props={"href": "https://www.google.com","target":"_blank"})
+        self.assertEqual(node1.to_html(),"<a href='https://www.google.com' target='_blank' >Deez</a>")
+
+    def test_eq5(self):
+        node = LeafNode(None,value="Hello, world!")
+        self.assertEqual(node.to_html(),"Hello, world!")
+
+    def test_eq6(self):
+        node = LeafNode("p",None)
+        with self.assertRaises(ValueError) as context:
+            node.to_html()
+        self.assertEqual(str(context.exception),"All leaf nodes must have a value")
+
 
 if __name__ == "__main__":
     unittest.main()
