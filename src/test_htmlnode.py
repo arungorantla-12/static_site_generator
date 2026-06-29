@@ -1,5 +1,5 @@
 import unittest
-from htmlnode import HTMLNode,LeafNode
+from htmlnode import HTMLNode,LeafNode,ParentNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_eq1(self):
@@ -43,6 +43,46 @@ class TestHTMLNode(unittest.TestCase):
             node.to_html()
         self.assertEqual(str(context.exception),"All leaf nodes must have a value")
 
+    def test_eq7(self):
+        child_node1 = LeafNode(None,"PlainText")
+        child_node2 = LeafNode("a","GoogleLink",{"href": "https://www.google.com","target":"_blank"})
+        parent_node = ParentNode("p",[child_node1,child_node2])
+        self.assertEqual(parent_node.to_html(),"<p>PlainText<a href='https://www.google.com' target='_blank' >GoogleLink</a></p>")
+
+
+    def test_eq8(self):
+        child_node2 = LeafNode("a","GoogleLink",{"href": "https://www.google.com","target":"_blank"})
+        child_node1 = ParentNode("p",[child_node2])
+        parent_node = ParentNode("p",[child_node1])
+        self.assertEqual(parent_node.to_html(),"<p><p><a href='https://www.google.com' target='_blank' >GoogleLink</a></p></p>")
+
+
+    def test_eq9(self):
+        child_node1 = HTMLNode()
+        parent_node = ParentNode("p",[child_node1])
+
+        with self.assertRaises(TypeError) as context:
+            parent_node.to_html()
+
+        self.assertEqual(str(context.exception),"Parent Node can only contain LeafNode children")
+
+
+    def test_eq10(self):
+        child_node1 = LeafNode(None,"PlainText")
+        child_node2 = LeafNode(None,"AnotherPlainText")
+
+        parent_node1 = ParentNode(None,children=[child_node1,child_node2])
+        parent_node2 = ParentNode("p",None)
+
+        with self.assertRaises(ValueError) as context:
+            parent_node1.to_html()
+
+        with self.assertRaises(ValueError) as nochildcontext:
+            parent_node2.to_html()
+
+        self.assertEqual(str(context.exception),"All parent nodes must have a tag")
+        self.assertEqual(str(nochildcontext.exception),"All parent nodes must have Children")
+        
 
 if __name__ == "__main__":
     unittest.main()
