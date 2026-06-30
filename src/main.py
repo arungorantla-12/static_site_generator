@@ -27,3 +27,8 @@ child_node1 = ParentNode("p",[child_node2])
 parent_node = ParentNode("p",[child_node1])
 
 print(parent_node.to_html())
+
+
+node = TextNode("This is a Plain Text","LINK",'www.google.com')
+html_node = node.text_node_to_html_node()
+print(html_node.props)
